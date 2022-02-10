@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import {
   useTable,
   useSortBy,
@@ -8,27 +7,17 @@ import {
   Row,
 } from 'react-table';
 import { useRowSelectColumn } from '@lineup-lite/hooks';
+import { useMemo } from 'react';
 
 import { PaginationControls } from '@/portainer/components/pagination-controls';
 import {
   QuickActionsSettings,
   buildAction,
 } from '@/portainer/components/datatables/components/QuickActionsSettings';
-import {
-  Table,
-  TableActions,
-  TableContainer,
-  TableHeaderRow,
-  TableRow,
-  TableSettingsMenu,
-  TableTitle,
-  TableTitleActions,
-} from '@/portainer/components/datatables/components';
+import { Table } from '@/portainer/components/datatables/components';
 import { multiple } from '@/portainer/components/datatables/components/filter-types';
 import { useTableSettings } from '@/portainer/components/datatables/components/useTableSettings';
 import { ColumnVisibilityMenu } from '@/portainer/components/datatables/components/ColumnVisibilityMenu';
-import { useRepeater } from '@/portainer/components/datatables/components/useRepeater';
-import { useDebounce } from '@/portainer/hooks/useDebounce';
 import {
   SearchBar,
   useSearchBarState,
@@ -37,39 +26,47 @@ import type {
   ContainersTableSettings,
   DockerContainer,
 } from '@/docker/containers/types';
-import { useEnvironment } from '@/portainer/environments/useEnvironment';
 import { useRowSelect } from '@/portainer/components/datatables/components/useRowSelect';
 import { Checkbox } from '@/portainer/components/form-components/Checkbox';
-import { TableFooter } from '@/portainer/components/datatables/components/TableFooter';
 import { SelectedRowsCount } from '@/portainer/components/datatables/components/SelectedRowsCount';
+import { Environment } from '@/portainer/environments/types';
+import { Filters } from '@/docker/containers/containers.service';
 
 import { ContainersDatatableActions } from './ContainersDatatableActions';
 import { ContainersDatatableSettings } from './ContainersDatatableSettings';
 import { useColumns } from './columns';
+import { RowProvider } from './RowContext';
 
-export interface ContainerTableProps {
+export interface Props {
+  filters?: Filters;
   isAddActionVisible: boolean;
-  dataset: DockerContainer[];
-  onRefresh?(): Promise<void>;
+  containers: DockerContainer[];
   isHostColumnVisible: boolean;
+  isRefreshVisible: boolean;
   tableKey?: string;
+  environment: Environment;
 }
+
+const actions = [
+  buildAction('logs', 'Logs'),
+  buildAction('inspect', 'Inspect'),
+  buildAction('stats', 'Stats'),
+  buildAction('exec', 'Console'),
+  buildAction('attach', 'Attach'),
+];
 
 export function ContainersDatatable({
   isAddActionVisible,
-  dataset,
-  onRefresh,
+  containers,
   isHostColumnVisible,
-}: ContainerTableProps) {
+  isRefreshVisible,
+  environment,
+}: Props) {
   const { settings, setTableSettings } =
     useTableSettings<ContainersTableSettings>();
   const [searchBarValue, setSearchBarValue] = useSearchBarState('containers');
 
-  const columns = useColumns();
-
-  const endpoint = useEnvironment();
-
-  useRepeater(settings.autoRefreshRate, onRefresh);
+  const columns = useColumns(isHostColumnVisible);
 
   const {
     getTableProps,
@@ -82,14 +79,13 @@ export function ContainersDatatable({
     gotoPage,
     setPageSize,
     setHiddenColumns,
-    toggleHideColumn,
     setGlobalFilter,
     state: { pageIndex, pageSize },
   } = useTable<DockerContainer>(
     {
       defaultCanFilter: false,
       columns,
-      data: dataset,
+      data: containers,
       filterTypes: { multiple },
       initialState: {
         pageSize: settings.pageSize || 10,
@@ -100,11 +96,12 @@ export function ContainersDatatable({
       isRowSelectable(row: Row<DockerContainer>) {
         return !row.original.IsPortainer;
       },
-      autoResetSelectedRows: false,
       getRowId(originalRow: DockerContainer) {
         return originalRow.Id;
       },
       selectCheckboxComponent: Checkbox,
+      autoResetSelectedRows: false,
+      autoResetGlobalFilter: false,
     },
     useFilters,
     useGlobalFilter,
@@ -114,57 +111,41 @@ export function ContainersDatatable({
     useRowSelectColumn
   );
 
-  const debouncedSearchValue = useDebounce(searchBarValue);
-
-  useEffect(() => {
-    setGlobalFilter(debouncedSearchValue);
-  }, [debouncedSearchValue, setGlobalFilter]);
-
-  useEffect(() => {
-    toggleHideColumn('host', !isHostColumnVisible);
-  }, [toggleHideColumn, isHostColumnVisible]);
-
   const columnsToHide = allColumns.filter((colInstance) => {
     const columnDef = columns.find((c) => c.id === colInstance.id);
     return columnDef?.canHide;
   });
 
-  const actions = [
-    buildAction('logs', 'Logs'),
-    buildAction('inspect', 'Inspect'),
-    buildAction('stats', 'Stats'),
-    buildAction('exec', 'Console'),
-    buildAction('attach', 'Attach'),
-  ];
+  const rowContext = useMemo(() => ({ environment }), [environment]);
 
   const tableProps = getTableProps();
   const tbodyProps = getTableBodyProps();
 
   return (
-    <TableContainer>
-      <TableTitle icon="fa-cubes" label="Containers">
-        <TableTitleActions>
+    <Table.Container>
+      <Table.Title icon="fa-cubes" label="Containers">
+        <Table.TitleActions>
           <ColumnVisibilityMenu<DockerContainer>
             columns={columnsToHide}
             onChange={handleChangeColumnsVisibility}
             value={settings.hiddenColumns}
           />
 
-          <TableSettingsMenu
+          <Table.SettingsMenu
             quickActions={<QuickActionsSettings actions={actions} />}
           >
-            <ContainersDatatableSettings isRefreshVisible={!!onRefresh} />
-          </TableSettingsMenu>
-        </TableTitleActions>
-      </TableTitle>
+            <ContainersDatatableSettings isRefreshVisible={isRefreshVisible} />
+          </Table.SettingsMenu>
+        </Table.TitleActions>
+      </Table.Title>
 
-      <TableActions>
+      <Table.Actions>
         <ContainersDatatableActions
           selectedItems={selectedFlatRows.map((row) => row.original)}
           isAddActionVisible={isAddActionVisible}
-          endpointId={endpoint.Id}
+          endpointId={environment.Id}
         />
-      </TableActions>
+      </Table.Actions>
 
       <SearchBar value={searchBarValue} onChange={handleSearchBarChange} />
 
@@ -179,7 +160,7 @@ export function ContainersDatatable({
               headerGroup.getHeaderGroupProps();
 
             return (
-              <TableHeaderRow<DockerContainer>
+              <Table.HeaderRow<DockerContainer>
                 key={key}
                 className={className}
                 role={role}
@@ -195,42 +176,37 @@ export function ContainersDatatable({
           role={tbodyProps.role}
           style={tbodyProps.style}
         >
-          {page.length > 0 ? (
-            page.map((row) => {
-              prepareRow(row);
-              const { key, className, role, style } = row.getRowProps();
-              return (
-                <TableRow<DockerContainer>
+          <Table.Content
+            emptyContent="No container available."
+            rows={page}
+            prepareRow={prepareRow}
+            renderRow={(row, { key, className, role, style }) => (
+              <RowProvider context={rowContext} key={key}>
+                <Table.Row<DockerContainer>
                   cells={row.cells}
-                  key={key}
                   className={className}
                   role={role}
                   style={style}
+                  key={key}
                 />
-              );
-            })
-          ) : (
-            <tr>
-              <td colSpan={columns.length} className="text-center text-muted">
-                No container available.
-              </td>
-            </tr>
-          )}
+              </RowProvider>
+            )}
+          />
         </tbody>
       </Table>
 
-      <TableFooter>
+      <Table.Footer>
         <SelectedRowsCount value={selectedFlatRows.length} />
         <PaginationControls
           showAll
           pageLimit={pageSize}
           page={pageIndex + 1}
           onPageChange={(p) => gotoPage(p - 1)}
-          totalCount={dataset.length}
+          totalCount={containers.length}
           onPageLimitChange={handlePageSizeChange}
         />
-      </TableFooter>
-    </TableContainer>
+      </Table.Footer>
+    </Table.Container>
   );
 
   function handlePageSizeChange(pageSize: number) {
@@ -245,6 +221,7 @@ export function ContainersDatatable({
 
   function handleSearchBarChange(value: string) {
     setSearchBarValue(value);
+    setGlobalFilter(value);
   }
 
   function handleSortChange(id: string, desc: boolean) {

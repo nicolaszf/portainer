@@ -1,8 +1,8 @@
 import { createRowContext } from '@/portainer/components/datatables/RowContext';
+import { Environment } from '@/portainer/environments/types';
 
 interface RowContextState {
-  isOpenAmtEnabled: boolean;
-  groupName?: string;
+  environment: Environment;
 }
 
 const { RowProvider, useRowContext } = createRowContext<RowContextState>();

@@ -1,7 +1,5 @@
-import {
-  AccessControlFormData,
-  ResourceControlResponse,
-} from '@/portainer/access-control/types';
+import { PortainerMetadata } from '@/docker/types';
+import { AccessControlFormData } from '@/portainer/access-control/types';
 
 import { PortMapping } from './ContainerInstances/CreateContainerInstanceForm/PortsMappingField';
 
@@ -19,10 +17,6 @@ export interface ContainerInstanceFormValues {
   ports: PortMapping[];
   allocatePublicIP: boolean;
   accessControl: AccessControlFormData;
-}
-
-interface PortainerMetadata {
-  ResourceControl: ResourceControlResponse;
 }
 
 interface Container {

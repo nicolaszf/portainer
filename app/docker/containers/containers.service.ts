@@ -1,10 +1,33 @@
 import { EnvironmentId } from '@/portainer/environments/types';
 import PortainerError from '@/portainer/error';
-import axios from '@/portainer/services/axios';
+import axios, { parseAxiosError } from '@/portainer/services/axios';
 
 import { genericHandler } from '../rest/response/handlers';
 
-import { ContainerId, DockerContainer } from './types';
+import { ContainerId, DockerContainer, DockerContainerResponse } from './types';
+import { parseViewModel } from './utils';
+
+export interface Filters {
+  label?: string[];
+}
+
+export async function getContainers(
+  environmentId: EnvironmentId,
+  all = true,
+  filters?: Filters
+) {
+  try {
+    const response = await axios.get<DockerContainerResponse[]>(
+      urlBuilder(environmentId, undefined, 'json'),
+      {
+        params: { all, filters: filters && JSON.stringify(filters) },
+      }
+    );
+    return response.data.map((c) => parseViewModel(c));
+  } catch (error) {
+    throw parseAxiosError(error as Error, 'Unable to retrieve containers');
+  }
+}
 
 export async function startContainer(
   endpointId: EnvironmentId,
@@ -88,13 +111,17 @@ export async function removeContainer(
 
 function urlBuilder(
   endpointId: EnvironmentId,
-  id: ContainerId,
+  id?: ContainerId,
   action?: string
 ) {
-  const url = `/endpoints/${endpointId}/docker/containers/${id}`;
+  let url = `/endpoints/${endpointId}/docker/containers`;
+
+  if (id) {
+    url += `/${id}`;
+  }
 
   if (action) {
-    return `${url}/${action}`;
+    url += `/${action}`;
   }
 
   return url;
