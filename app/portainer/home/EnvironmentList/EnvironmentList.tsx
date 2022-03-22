@@ -9,7 +9,6 @@ import {
   EnvironmentStatus,
 } from '@/portainer/environments/types';
 import { Button } from '@/portainer/components/Button';
-import { useIsAdmin } from '@/portainer/hooks/useUser';
 import {
   FilterSearchBar,
   useSearchBarState,
@@ -27,6 +26,7 @@ import { useEnvironmentList } from '@/portainer/environments/queries';
 import { useGroups } from '@/portainer/environment-groups/queries';
 import { useTags } from '@/portainer/tags/queries';
 import { Filter } from '@/portainer/home/types';
+import { useUser } from '@/portainer/hooks/useUser';
 
 import { EnvironmentItem } from './EnvironmentItem';
 import { KubeconfigButton } from './KubeconfigButton';
@@ -39,7 +39,7 @@ interface Props {
 }
 
 export function EnvironmentList({ onClickItem, onRefresh }: Props) {
-  const isAdmin = useIsAdmin();
+  const { isAdmin } = useUser();
   const storageKey = 'home_endpoints';
   const allEnvironmentType = [
     EnvironmentType.Docker,
