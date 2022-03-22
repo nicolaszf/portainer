@@ -31,6 +31,7 @@ import {
 import { promiseSequence } from '@/portainer/helpers/promise-utils';
 import { Team, TeamId } from '@/portainer/teams/types';
 import { deleteTeam } from '@/portainer/teams/teams.service';
+import { confirmDeletionAsync } from '@/portainer/services/modal.service/confirm';
 
 import { TableSettings } from './types';
 
@@ -216,6 +217,14 @@ function useRemoveMutation() {
   return { handleRemove };
 
   async function handleRemove(teams: TeamId[]) {
+    const confirmed = await confirmDeletionAsync(
+      'Are you sure you want to remove the selected teams?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     deleteMutation.mutate(teams, {
       onSuccess: () => {
         notifySuccess('Teams successfully removed', '');
