@@ -806,12 +806,6 @@ json-tree .branch-preview {
 }
 /* !uib-typeahead override */
 
-.kubectl-shell {
-  display: block;
-  text-align: center;
-  padding-bottom: 5px;
-}
-
 .w-full {
   width: 100%;
 }
@@ -842,6 +836,10 @@ json-tree .branch-preview {
 
 .space-y-8 > * + * {
   margin-top: 2rem;
+}
+
+.space-x-8 > * + * {
+  margin-left: 2rem;
 }
 
 .my-8 {
