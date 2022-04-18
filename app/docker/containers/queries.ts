@@ -12,7 +12,7 @@ export function useContainers(
   autoRefreshRate?: number
 ) {
   return useQuery(
-    ['docker', environmentId, 'containers', { all, filters }],
+    ['environments', environmentId, 'docker', 'containers', { all, filters }],
     () => getContainers(environmentId, all, filters),
     {
       onError(err) {
