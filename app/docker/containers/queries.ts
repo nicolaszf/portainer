@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 
 import { EnvironmentId } from '@/portainer/environments/types';
-import { error as notifyError } from '@/portainer/services/notifications';
+import { notifyError } from '@/portainer/services/notifications';
 
 import { Filters, getContainers } from './containers.service';
 
