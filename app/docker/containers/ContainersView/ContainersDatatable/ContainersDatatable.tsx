@@ -30,7 +30,6 @@ import { useRowSelect } from '@/portainer/components/datatables/components/useRo
 import { Checkbox } from '@/portainer/components/form-components/Checkbox';
 import { SelectedRowsCount } from '@/portainer/components/datatables/components/SelectedRowsCount';
 import { Environment } from '@/portainer/environments/types';
-import { Filters } from '@/docker/containers/containers.service';
 
 import { ContainersDatatableActions } from './ContainersDatatableActions';
 import { ContainersDatatableSettings } from './ContainersDatatableSettings';
@@ -38,12 +37,11 @@ import { useColumns } from './columns';
 import { RowProvider } from './RowContext';
 
 export interface Props {
-  filters?: Filters;
   isAddActionVisible: boolean;
   containers: DockerContainer[];
   isHostColumnVisible: boolean;
   isRefreshVisible: boolean;
-  tableKey?: string;
+  tableKey: string;
   environment: Environment;
 }
 
@@ -60,11 +58,12 @@ export function ContainersDatatable({
   containers,
   isHostColumnVisible,
   isRefreshVisible,
+  tableKey,
   environment,
 }: Props) {
   const { settings, setTableSettings } =
     useTableSettings<ContainersTableSettings>();
-  const [searchBarValue, setSearchBarValue] = useSearchBarState('containers');
+  const [searchBarValue, setSearchBarValue] = useSearchBarState(tableKey);
 
   const columns = useColumns(isHostColumnVisible);
 

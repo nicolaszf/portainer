@@ -2,9 +2,10 @@ import {
   TableSettingsProvider,
   useTableSettings,
 } from '@/portainer/components/datatables/components/useTableSettings';
+import { Environment } from '@/portainer/environments/types';
 
 import { Filters } from '../../containers.service';
-import { ContainersTableSettings } from '../../types';
+import { ContainersTableSettings, DockerContainer } from '../../types';
 import { useContainers } from '../../queries';
 
 import {
@@ -12,12 +13,17 @@ import {
   Props as ContainerDatatableProps,
 } from './ContainersDatatable';
 
-interface Props extends Omit<ContainerDatatableProps, 'containers'> {
+interface Props
+  extends Omit<ContainerDatatableProps, 'containers' | 'tableKey'> {
   filters?: Filters;
+  tableKey?: string;
 }
 
 export function ContainersDatatableContainer({
   tableKey = 'containers',
+  environment,
+  filters,
+  isRefreshVisible,
   ...props
 }: Props) {
   const defaultSettings = {
@@ -31,18 +37,39 @@ export function ContainersDatatableContainer({
 
   return (
     <TableSettingsProvider defaults={defaultSettings} storageKey={tableKey}>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <ContainersLoader {...props} />
+      <ContainersLoader
+        environment={environment}
+        filters={filters}
+        isRefreshVisible={isRefreshVisible}
+      >
+        {(containers) => (
+          <ContainersDatatable
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
+            containers={containers}
+            isRefreshVisible={isRefreshVisible}
+            environment={environment}
+            tableKey={tableKey}
+          />
+        )}
+      </ContainersLoader>
     </TableSettingsProvider>
   );
+}
+
+interface ContainersLoaderProps {
+  environment: Environment;
+  filters?: Filters;
+  isRefreshVisible: boolean;
+  children: (containers: DockerContainer[]) => React.ReactNode;
 }
 
 function ContainersLoader({
   environment,
   filters,
   isRefreshVisible,
-  ...props
-}: Props) {
+  children,
+}: ContainersLoaderProps) {
   const { settings } = useTableSettings<ContainersTableSettings>();
 
   const containersQuery = useContainers(
@@ -56,13 +83,5 @@ function ContainersLoader({
     return null;
   }
 
-  return (
-    <ContainersDatatable
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...props}
-      containers={containersQuery.data}
-      isRefreshVisible={isRefreshVisible}
-      environment={environment}
-    />
-  );
+  return <>{children(containersQuery.data)}</>;
 }
