@@ -4,7 +4,7 @@ import { Environment } from '@/portainer/environments/types';
 import { isAgentEnvironment } from '@/portainer/environments/utils';
 import { r2a } from '@/react-tools/react2angular';
 
-import { ContainersDatatableContainer } from './ContainersDatatable/ContainersDatatableContainer';
+import { ContainersDatatableContainer } from './ContainersDatatable';
 
 interface Props {
   endpoint: Environment;

@@ -2,10 +2,12 @@ import { StateRegistry } from '@uirouter/angularjs';
 import angular from 'angular';
 
 import { ContainersViewAngular } from './ContainersView/ContainersView';
+import { ContainersDatatableAngular } from './ContainersView/ContainersDatatable';
 
 export default angular
   .module('portainer.docker.containers', [])
   .component('containersView', ContainersViewAngular)
+  .component('containersDatatable', ContainersDatatableAngular)
   .config(config).name;
 
 /* @ngInject */
