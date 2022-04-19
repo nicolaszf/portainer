@@ -10,7 +10,7 @@ import styles from './FormControl.module.css';
 type Size = 'small' | 'medium' | 'large';
 
 export interface Props {
-  inputId: string;
+  inputId?: string;
   label: string | ReactNode;
   size?: Size;
   tooltip?: string;

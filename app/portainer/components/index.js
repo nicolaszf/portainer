@@ -15,6 +15,7 @@ import { TooltipAngular } from './Tip/Tooltip';
 import { beFeatureIndicatorAngular } from './BEFeatureIndicator';
 import { InformationPanelAngular } from './InformationPanel';
 import { ForcePasswordUpdateHintAngular, PasswordCheckHintAngular } from './PasswordCheckHint';
+import { TagSelectorAngular } from './TagSelector/TagSelector';
 
 export default angular
   .module('portainer.app.components', [headerModule, boxSelectorModule, widgetModule, sidebarModule, gitFormModule, porAccessManagementModule, formComponentsModule])
@@ -24,4 +25,5 @@ export default angular
   .component('beFeatureIndicator', beFeatureIndicatorAngular)
   .component('forcePasswordUpdateHint', ForcePasswordUpdateHintAngular)
   .component('passwordCheckHint', PasswordCheckHintAngular)
+  .component('tagSelector', TagSelectorAngular)
   .component('createAccessToken', CreateAccessTokenAngular).name;
