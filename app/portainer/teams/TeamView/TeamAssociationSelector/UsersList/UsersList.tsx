@@ -7,12 +7,7 @@ import {
 import { useMemo, useState } from 'react';
 
 import { Button } from '@/portainer/components/Button';
-import {
-  Table,
-  TableContent,
-  TableHeaderRow,
-  TableRow,
-} from '@/portainer/components/datatables/components';
+import { Table } from '@/portainer/components/datatables/components';
 import {
   Widget,
   WidgetBody,
@@ -125,7 +120,7 @@ export function UsersList({ users, onAddUsers }: Props) {
                 headerGroup.getHeaderGroupProps();
 
               return (
-                <TableHeaderRow<User>
+                <Table.HeaderRow<User>
                   key={key}
                   className={className}
                   role={role}
@@ -141,13 +136,13 @@ export function UsersList({ users, onAddUsers }: Props) {
             role={tbodyProps.role}
             style={tbodyProps.style}
           >
-            <TableContent
+            <Table.Content
               emptyContent="No users."
               prepareRow={prepareRow}
               rows={page}
               renderRow={(row, { key, className, role, style }) => (
                 <RowProvider context={rowContext} key={key}>
-                  <TableRow<User>
+                  <Table.Row<User>
                     cells={row.cells}
                     key={key}
                     className={className}

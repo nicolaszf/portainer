@@ -7,12 +7,7 @@ import {
 import { useMemo, useState } from 'react';
 
 import { Button } from '@/portainer/components/Button';
-import {
-  Table,
-  TableContent,
-  TableHeaderRow,
-  TableRow,
-} from '@/portainer/components/datatables/components';
+import { Table } from '@/portainer/components/datatables/components';
 import {
   Widget,
   WidgetBody,
@@ -20,7 +15,6 @@ import {
   WidgetTitle,
 } from '@/portainer/components/widget';
 import { User, UserId } from '@/portainer/users/types';
-import { TableFooter } from '@/portainer/components/datatables/components/TableFooter';
 import { PageSelector } from '@/portainer/components/pagination-controls/PageSelector';
 import { Input } from '@/portainer/components/form-components/Input';
 import { TeamRole } from '@/portainer/teams/types';
@@ -142,7 +136,7 @@ export function TeamMembersList({
                 headerGroup.getHeaderGroupProps();
 
               return (
-                <TableHeaderRow<User>
+                <Table.HeaderRow<User>
                   key={key}
                   className={className}
                   role={role}
@@ -158,13 +152,13 @@ export function TeamMembersList({
             role={tbodyProps.role}
             style={tbodyProps.style}
           >
-            <TableContent
+            <Table.Content
               emptyContent="No users."
               prepareRow={prepareRow}
               rows={page}
               renderRow={(row, { key, className, role, style }) => (
                 <RowProvider context={rowContext} key={key}>
-                  <TableRow<User>
+                  <Table.Row<User>
                     cells={row.cells}
                     key={key}
                     className={className}
@@ -176,7 +170,7 @@ export function TeamMembersList({
             />
           </tbody>
         </Table>
-        <TableFooter>
+        <Table.Footer>
           {pageSize !== 0 && (
             <div className="pagination-controls">
               <PageSelector
@@ -188,7 +182,7 @@ export function TeamMembersList({
               />
             </div>
           )}
-        </TableFooter>
+        </Table.Footer>
       </WidgetBody>
     </Widget>
   );
