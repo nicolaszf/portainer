@@ -43,7 +43,7 @@ func Test_endpointList(t *testing.T) {
 	is.NoError(err, "error creating a user")
 
 	bouncer := helper.NewTestRequestBouncer()
-	h := NewHandler(bouncer)
+	h := NewHandler(bouncer, nil)
 	h.DataStore = store
 	h.ComposeStackManager = testhelpers.NewComposeStackManager()
 
