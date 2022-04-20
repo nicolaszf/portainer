@@ -81,21 +81,17 @@ export function TagSelector({ value, allowCreate = false, onChange }: Props) {
       )}
 
       <FormControl label="Tags" inputId="tags-selector">
-        {tags.length > 0 || allowCreate ? (
-          <SelectComponent
-            inputId="tags-selector"
-            value={[] as { label: string; value: number }[]}
-            hideSelectedOptions
-            options={tags.filter((tag) => !value.includes(tag.value))}
-            closeMenuOnSelect={false}
-            onChange={handleAdd}
-            noOptionsMessage={() => 'No tags available'}
-            formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
-            onCreateOption={handleCreateOption}
-          />
-        ) : (
-          <span className="small text-muted">No tags available</span>
-        )}
+        <SelectComponent
+          inputId="tags-selector"
+          value={[] as { label: string; value: number }[]}
+          hideSelectedOptions
+          options={tags.filter((tag) => !value.includes(tag.value))}
+          closeMenuOnSelect={false}
+          onChange={handleAdd}
+          noOptionsMessage={() => 'No tags available'}
+          formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+          onCreateOption={handleCreateOption}
+        />
       </FormControl>
     </>
   );

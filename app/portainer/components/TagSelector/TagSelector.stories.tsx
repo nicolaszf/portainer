@@ -13,7 +13,13 @@ export default {
 function Example() {
   const [value, setValue] = useState<TagId[]>([]);
 
+  return <TagSelector value={value} onChange={setValue} />;
+}
+
+function ExampleWithCreate() {
+  const [value, setValue] = useState<TagId[]>([]);
+
   return <TagSelector value={value} onChange={setValue} allowCreate />;
 }
 
-export { Example };
+export { Example, ExampleWithCreate };
