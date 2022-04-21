@@ -73,7 +73,13 @@ export function EnvironmentList({ onClickItem, onRefresh }: Props) {
 
   const { isLoading, environments, totalCount, totalAvailable } =
     useEnvironmentList(
-      { page, pageLimit, types: platformType, search: debouncedTextFilter },
+      {
+        page,
+        pageLimit,
+        types: platformType,
+        search: debouncedTextFilter,
+        edgeDeviceFilter: 'none',
+      },
       true
     );
 
