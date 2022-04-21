@@ -18,7 +18,7 @@ export function withError(fallbackMessage?: string, title = 'Failure') {
 
 export function withInvalidate(
   queryClient: QueryClient,
-  queryKeysToInvalidate: string[][]
+  queryKeysToInvalidate: (string[] | readonly string[])[]
 ) {
   return {
     onSuccess() {
