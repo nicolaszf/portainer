@@ -32,7 +32,7 @@ export function FormControl({
     <div className={clsx('form-group', styles.container)}>
       <label
         htmlFor={inputId}
-        className={`${sizeClassLabel(size)} control-label text-left`}
+        className={clsx(sizeClassLabel(size), 'control-label', 'text-left')}
       >
         {label}
 
@@ -41,7 +41,7 @@ export function FormControl({
         {tooltip && <Tooltip message={tooltip} />}
       </label>
 
-      <div className={`${sizeClassChildren(size)}`}>{children}</div>
+      <div className={sizeClassChildren(size)}>{children}</div>
 
       {errors && (
         <div className="col-md-12">
